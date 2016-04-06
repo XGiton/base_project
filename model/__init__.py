@@ -91,3 +91,6 @@ class MySQLSlaveConnectionWrap(MySQLConnection):
 
     def __exit__(self, type, value, trace):
         self.close()
+
+
+from . import setting
