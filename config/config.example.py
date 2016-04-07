@@ -20,3 +20,15 @@ EMAIL_ADDR = 'xgiton@126.com'
 EMAIL_SUBJECT = 'Base Project'
 EMAIL_PWD = ''
 ADMINS = ['xiaozhidong@jaxus.com']
+
+
+# -------------------------------------------------
+# Redis Cache Config || Redis 缓存
+# -------------------------------------------------
+REDIS_NAME = ''
+REDIS_DB = ''
+REDIS_PWD = ''
+REDIS_0_HOST = ''
+REDIS_0_PORT = 26379
+REDIS_1_HOST = ''
+REDIS_1_PORT = 26379
