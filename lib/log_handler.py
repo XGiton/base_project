@@ -2,15 +2,51 @@
 """
 Define different log handler here
 """
+from cache import r
 from config import EMAIL_HOST, EMAIL_ADDR, EMAIL_SUBJECT, EMAIL_PWD, ADMINS
 from config.default_celery import celery_app
 from logging import Handler, Filter, Formatter, WARNING, ERROR, INFO
 from logging.handlers import SMTPHandler, HTTPHandler
 
 
-class CustomSMTPHandler(SMTPHandler):
+class LogFrequencyFilter(Filter):
+    """: Filter for log frequency
     """
-    程序报错时, 给管理员发送报错提醒
+    def __init__(self, name=''):
+        Filter.__init__(self, name=name)
+
+    def filter(self, record):
+        """: Filter if the curtom log
+        """
+        if super(LogFrequencyFilter, self).filter(record) == 0:
+            return 0
+
+        # distinuguish this error log
+        key = ','.join((
+            record.module,
+            record.filename,
+            record.funcName,
+            str(record.lineno),
+            record.levelname
+        ))
+
+        # get redis value of this key
+        v = r.incr(key)
+
+        if v <= 60 * 60 * 24 + 1:
+            # check if need set expire time
+            if v == 1:
+                # set expire
+                r.expire(key, 5)
+            # will be handled
+            return 1
+        else:
+            return 0
+
+
+
+class CustomSMTPHandler(SMTPHandler):
+    """: Email to admins if occurs errors
     """
     def __init__(self, mailhost, fromaddr, toaddrs, subject,
                  credentials=None, secure=None):
@@ -63,4 +99,5 @@ mailer.setFormatter(Formatter(
     Message:         %(message)s
     '''
 ))
+mailer.addFilter(LogFrequencyFilter())
 mailer.setLevel(WARNING)

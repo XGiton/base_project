@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # --- Redis Cache ---
-from redis.sentinel import Sentinel
 from config import (
     REDIS_NAME,
     REDIS_DB,
@@ -9,12 +8,18 @@ from config import (
     REDIS_0_PORT,
     REDIS_1_HOST,
     REDIS_1_PORT,
+    IS_REPLICA,
 )
 
 
-redis_sentinel = Sentinel(
-    [(REDIS_0_HOST, REDIS_0_PORT), (REDIS_1_HOST, REDIS_1_PORT)],
-    password=REDIS_PWD,
-    db=REDIS_DB
-)
-r = redis_sentinel.master_for(REDIS_NAME)
+if IS_REPLICA:
+    from redis.sentinel import Sentinel
+    redis_sentinel = Sentinel(
+        [(REDIS_0_HOST, REDIS_0_PORT), (REDIS_1_HOST, REDIS_1_PORT)],
+        password=REDIS_PWD,
+        db=REDIS_DB
+    )
+    r = redis_sentinel.master_for(REDIS_NAME)
+else:
+    import redis
+    r = redis.StrictRedis(host=REDIS_0_HOST, port=REDIS_0_PORT, db=REDIS_DB)
