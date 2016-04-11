@@ -33,3 +33,10 @@ REDIS_0_PORT = 6379
 REDIS_1_HOST = ''
 REDIS_1_PORT = 6379
 IS_REPLICA = False
+
+
+# -------------------------------------------------
+# Error Email Config || 报错通知邮件
+# -------------------------------------------------
+LOG_REPEAT_TIMES = 5
+LOG_INTERVAL_TIME = 60 * 60 * 24

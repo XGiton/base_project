@@ -3,7 +3,15 @@
 Define different log handler here
 """
 from cache import r
-from config import EMAIL_HOST, EMAIL_ADDR, EMAIL_SUBJECT, EMAIL_PWD, ADMINS
+from config import (
+    EMAIL_HOST,
+    EMAIL_ADDR,
+    EMAIL_SUBJECT,
+    EMAIL_PWD,
+    ADMINS,
+    LOG_REPEAT_TIMES,
+    LOG_INTERVAL_TIME,
+)
 from config.default_celery import celery_app
 from logging import Handler, Filter, Formatter, WARNING, ERROR, INFO
 from logging.handlers import SMTPHandler, HTTPHandler
@@ -33,16 +41,15 @@ class LogFrequencyFilter(Filter):
         # get redis value of this key
         v = r.incr(key)
 
-        if v <= 60 * 60 * 24 + 1:
+        if v <= LOG_REPEAT_TIMES:
             # check if need set expire time
             if v == 1:
                 # set expire
-                r.expire(key, 5)
+                r.expire(key, LOG_INTERVAL_TIME)
             # will be handled
             return 1
         else:
             return 0
-
 
 
 class CustomSMTPHandler(SMTPHandler):

@@ -2,18 +2,12 @@
 # Gevent monkey patch to support coroutine
 from gevent import monkey
 monkey.patch_all()
-from base64 import b64encode
 from config import (DEBUG, PORT)
-from flask import Flask
 from gevent.wsgi import WSGIServer
-from uuid import uuid4
+from app import app
 
 
-app = Flask(__name__, static_folder='public')
-app.secret_key = b64encode(uuid4().hex)
-app.debug = DEBUG
-
-
+# Add api blueprint
 from api import api
 app.register_blueprint(api, url_prefix='/api')
 
@@ -35,6 +29,8 @@ if DEBUG:
     def run_server():
         http_server = WSGIServer(('0.0.0.0', PORT), app)
         http_server.serve_forever()
+
+
 else:
 
     from lib.log_handler import mailer
