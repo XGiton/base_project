@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
-from flask.ext.login import flask_login
+from flask.ext import login as flask_login
 from uuid import uuid4
 from base64 import b64encode
 from config import DEBUG
